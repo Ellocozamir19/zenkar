@@ -1,0 +1,140 @@
+/* Estilos AuthModal: rojo, negro, blanco, sin sombra ni gradiente */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  background: #fff;
+  border-radius: 18px;
+  padding: 2.5rem 2.2rem 2rem 2.2rem;
+  min-width: 350px;
+  max-width: 90vw;
+  /* sin sombra */
+  position: relative;
+  animation: modalIn 0.25s cubic-bezier(.4,1.6,.6,1) 1;
+}
+@keyframes modalIn {
+  from { transform: translateY(40px) scale(0.98); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #c00;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.form-group {
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+label {
+  font-size: 1rem;
+  color: #111;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+input {
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid #c00;
+  border-radius: 7px;
+  font-size: 1rem;
+  background: #fff !important;
+  color: #111 !important;
+  transition: border 0.2s;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+input:focus {
+  border-color: #111;
+  background: #fff !important;
+  color: #111 !important;
+}
+input::placeholder {
+  color: #888;
+  opacity: 1;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: #111 !important;
+}
+input:-internal-autofill-selected {
+  background-color: #fff !important;
+  color: #111 !important;
+}
+select {
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid #c00;
+  border-radius: 7px;
+  font-size: 1rem;
+  background: #fff;
+  color: #111;
+  transition: border 0.2s;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+select:focus {
+  border-color: #111;
+  background: #fff;
+}
+.form-error {
+  color: #c00;
+  margin-bottom: 1rem;
+  font-size: 0.98rem;
+  text-align: center;
+}
+button {
+  width: 100%;
+  padding: 0.7rem 0;
+  border-radius: 7px;
+  border: none;
+  background: #c00;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.08rem;
+  cursor: pointer;
+  /* sin sombra ni gradiente */
+  transition: background 0.18s;
+  margin-top: 0.2rem;
+}
+button:hover {
+  background: #a00000;
+}
+.password-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.password-toggle {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  height: 32px;
+}
+.password-toggle img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+  filter: invert(18%) sepia(99%) saturate(7499%) hue-rotate(357deg) brightness(90%) contrast(110%);
+}

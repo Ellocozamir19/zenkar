@@ -1,0 +1,239 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.hero-section {
+  background: #000000;
+  min-height: 100vh;
+  width: 100vw;
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  box-sizing: border-box;
+  padding-top: 120px; /* Espacio para el header y separación visual */
+}
+.container {
+  width: 100%;
+  max-width: 1200px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+.hero-content {
+  width: 100%;
+  max-width: 800px;
+  min-width: 0;
+  text-align: center;
+  margin: 0 auto;
+}
+.hero-title {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+.hero-title .highlight {
+  color: #dc2626;
+}
+.hero-subtitle {
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  color: #a1a1aa;
+  margin-bottom: 4rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.search-container {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  border: 1px solid #e5e7eb;
+  gap: 0.5rem;
+}
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 20px 24px;
+  font-size: 1.125rem;
+  color: #111827;
+  background: transparent;
+  font-weight: 400;
+}
+.search-input::placeholder {
+  color: #6b7280;
+}
+.search-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 20px 32px;
+  border-radius: 6px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.search-btn.small {
+  padding: 12px 18px;
+  font-size: 1rem;
+  border-radius: 6px;
+  margin-left: 0.5rem;
+  height: 44px;
+  min-width: 90px;
+  max-width: 120px;
+}
+.search-btn:hover {
+  background: #b91c1c;
+}
+.search-btn:active {
+  transform: translateY(1px);
+}
+.search-box {
+  position: relative;
+  flex: 1;
+}
+.sugerencias-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  z-index: 10;
+  max-height: 220px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.sugerencias-list li {
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  color: #111827;
+  font-size: 1rem;
+  transition: background 0.15s;
+}
+.sugerencias-list li:hover {
+  background: #f3f4f6;
+}
+.comparisons-section {
+  margin-top: 3rem;
+}
+.comparisons-label {
+  color: #a1a1aa;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.quick-comparisons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+.comparison-btn {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #374151;
+  padding: 16px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 0.9rem;
+}
+.comparison-btn:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+}
+.comparison-btn:active {
+  transform: translateY(1px);
+}
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 100vh;
+    padding: 2rem 0;
+  }
+  .container {
+    padding: 0 20px;
+  }
+  .search-container {
+    flex-direction: column;
+    padding: 8px;
+    gap: 8px;
+  }
+  .search-input {
+    text-align: center;
+    padding: 18px 20px;
+  }
+  .search-btn {
+    width: 100%;
+    padding: 18px 24px;
+  }
+  .quick-comparisons {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .comparison-btn {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+  }
+}
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+  .hero-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  .hero-subtitle {
+    font-size: 1.125rem;
+    margin-bottom: 3rem;
+  }
+  .search-input {
+    font-size: 1rem;
+    padding: 16px 18px;
+  }
+  .search-btn {
+    font-size: 1rem;
+    padding: 16px 20px;
+  }
+}
+.search-input:focus {
+  outline: 2px solid #dc2626;
+  outline-offset: -2px;
+}
+.comparison-btn:focus {
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+}
+.search-btn:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}

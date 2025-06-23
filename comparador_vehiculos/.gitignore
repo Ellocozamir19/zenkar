@@ -1,0 +1,7 @@
+# Archivos y carpetas a ignorar
+__pycache__/
+*.pyc
+.env
+*.sqlite3
+/media/
+/static/

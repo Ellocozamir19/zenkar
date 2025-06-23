@@ -1,0 +1,13 @@
+# requirements.txt generado para Zenkar 
+#
+# Este archivo contiene todas las librerías que necesitas instalar para que el proyecto funcione igual que en mi compu.
+# Si quieres correr el backend, solo ejecuta:
+#   pip install -r requirements.txt
+#
+# Explicación de cada paquete:
+
+Django==5.2.3              # El framework principal, todo el backend está hecho en Django
+psycopg2-binary            # Para conectar Django con PostgreSQL (la base de datos principal)
+djangorestframework        # Para crear APIs REST y conectar con el frontend Vue
+pandas                     # Para procesar y analizar datos (por ejemplo, el resumen de autos por marca)
+django-cors-headers                # Para permitir que el frontend (Vue) se conecte al backend sin problemas de CORS

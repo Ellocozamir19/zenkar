@@ -1,0 +1,307 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+/* Estilos para el formulario extendido de registro de vendedor */
+.vendedor-extra-form {
+  margin-top: 1.5rem;
+  padding: 1.2rem 1.5rem 1.5rem 1.5rem;
+  background: #f9fafb;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.vendedor-extra-form .form-group {
+  margin-bottom: 1.1rem;
+}
+.vendedor-extra-form label {
+  font-weight: 500;
+  color: #222;
+}
+.vendedor-extra-form input,
+.vendedor-extra-form select {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-top: 0.2rem;
+  background: #fff;
+}
+.vendedor-extra-form .form-row {
+  display: flex;
+  gap: 1rem;
+}
+.vendedor-extra-form .form-row > .form-group {
+  flex: 1 1 0%;
+}
+.vendedor-extra-form .checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+.vendedor-extra-form .form-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.2rem 0 0.7rem 0;
+  color: #b91c1c;
+}
+.register-form-flex {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2.5rem;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  justify-content: center;
+  transition: gap 0.5s cubic-bezier(.4,1.6,.4,1);
+}
+.register-form-flex.vendedor {
+  /* No desplazamiento, solo mostrar ambos formularios centrados */
+}
+.register-main-form {
+  min-width: 320px;
+  max-width: 350px;
+  flex: 0 0 350px;
+  background: #fff;
+  z-index: 2;
+}
+.vendedor-extra-form {
+  min-width: 350px;
+  max-width: 420px;
+  flex: 0 0 420px;
+  margin-top: 0;
+  margin-left: 0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  z-index: 2;
+  align-self: flex-start;
+  max-height: 80vh;
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  transition: opacity 0.5s cubic-bezier(.4,1.6,.4,1), transform 0.5s cubic-bezier(.4,1.6,.4,1);
+  pointer-events: none;
+  position: relative;
+  z-index: 2;
+}
+.register-form-flex.vendedor .vendedor-extra-form {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 900px;
+  width: auto;
+  min-width: 350px;
+  margin: 2.5vh auto;
+  padding: 2.5rem 2rem 2rem 2rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+  position: relative;
+  overflow-x: auto;
+  overflow-y: visible;
+  transition: max-width 0.5s cubic-bezier(.4,1.6,.4,1), min-width 0.5s cubic-bezier(.4,1.6,.4,1), width 0.5s cubic-bezier(.4,1.6,.4,1);
+}
+/* Ajustar el ancho del modal según el tipo de usuario */
+.modal:not(.vendedor-modal) {
+  max-width: 400px;
+  min-width: 350px;
+  width: 100%;
+}
+.modal.vendedor-modal {
+  max-width: 900px;
+  min-width: 700px;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .modal, .modal.vendedor-modal {
+    max-width: 99vw;
+    min-width: 0;
+    padding: 1.2rem 0.5rem;
+    transition: none;
+  }
+  .register-form-flex {
+    flex-direction: column;
+    gap: 1.5rem;
+    justify-content: flex-start;
+    transition: none;
+  }
+  .vendedor-extra-form {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: 60vh;
+    transition: none;
+  }
+}
+.duda-icon {
+  width: 18px;
+  height: 18px;
+  margin-left: 0.18rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  filter: grayscale(0.2) brightness(0.9) contrast(1.2);
+}
+.duda-icon:hover, .duda-icon:focus {
+  opacity: 1;
+  filter: none;
+}
+.tooltip-ayuda {
+  position: fixed !important;
+  background: #dc2626;
+  color: #fff;
+  font-size: 0.97rem;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  white-space: pre-line;
+  z-index: 99999;
+  box-shadow: 0 4px 16px rgba(220,38,38,0.18);
+  pointer-events: none;
+  min-width: 200px;
+  max-width: 320px;
+  word-break: break-word;
+  display: block;
+  opacity: 0.98;
+  border: 2px solid #b91c1c;
+  transition: none;
+  left: 0;
+  top: 0;
+  transform: none;
+}
+.fade-slide-enter-active, .fade-slide-leave-active {
+  transition: opacity 0.6s cubic-bezier(.4,1.6,.4,1), transform 0.6s cubic-bezier(.4,1.6,.4,1);
+}
+.fade-slide-enter-from, .fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(38px);
+}
+.fade-slide-enter-to, .fade-slide-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+.vendedor-form-modal {
+  background: linear-gradient(135deg, #fff 80%, #f3f4f6 100%);
+  border-radius: 22px;
+  box-shadow: 0 10px 48px rgba(30,41,59,0.22);
+  max-width: 500px;
+  width: 98vw;
+  max-height: 92vh;
+  margin: 0 auto;
+  padding: 2.7rem 2.3rem 1.7rem 2.3rem;
+  z-index: 1001;
+  animation: modal-pop 0.28s cubic-bezier(.4,0,.2,1);
+  display: flex;
+  flex-direction: column;
+  border: 2.5px solid #dc2626;
+  position: relative;
+}
+
+.vendedor-form-header {
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: #dc2626;
+  margin-bottom: 2.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  justify-content: center;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 8px rgba(220,38,38,0.08);
+}
+
+.vendedor-form-icon {
+  font-size: 2.2rem;
+  color: #fff;
+  background: #dc2626;
+  border-radius: 50%;
+  padding: 0.35rem 0.6rem;
+  box-shadow: 0 2px 8px rgba(220,38,38,0.13);
+  border: 2px solid #fff;
+}
+
+.vendedor-form-group label {
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: #18181b;
+  margin-bottom: 0.32rem;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.vendedor-form-group input,
+.vendedor-form-group select {
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.62rem 1.1rem;
+  font-size: 1.08rem;
+  margin-bottom: 0.1rem;
+  outline: none;
+  transition: border 0.18s, box-shadow 0.18s;
+  background: #fff;
+  font-family: inherit;
+  box-shadow: 0 1px 2px rgba(30,41,59,0.03);
+  color: #18181b;
+  font-weight: 500;
+}
+
+.vendedor-form-group input:focus,
+.vendedor-form-group select:focus {
+  border: 2px solid #dc2626;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(220,38,38,0.13);
+}
+
+.vendedor-form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+.vendedor-form-actions button[type="submit"] {
+  background: #e53e3e;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 0.48rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(229,62,62,0.08);
+  transition: background 0.2s;
+}
+.vendedor-form-actions button[type="submit"]:hover {
+  background: #c53030;
+}
+.vendedor-form-actions button[type="button"] {
+  background: #e2e8f0;
+  color: #222;
+  border: none;
+  border-radius: 7px;
+  padding: 0.48rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  transition: background 0.2s;
+}
+.vendedor-form-actions button[type="button"]:hover {
+  background: #cbd5e1;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+body, .vendedor-form-modal, .vendedor-form-group input, .vendedor-form-group select, .vendedor-form-header {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
