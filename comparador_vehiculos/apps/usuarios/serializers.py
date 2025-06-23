@@ -5,7 +5,7 @@
 
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import Usuario
+from .models import Usuario, PeticionCambioPerfil
 
 class RegistroSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
@@ -52,3 +52,15 @@ class LoginSerializer(serializers.Serializer):
         if user and user.is_active:
             return user
         raise serializers.ValidationError('Credenciales incorrectas')
+
+class PeticionCambioPerfilSerializer(serializers.ModelSerializer):
+    usuario_username = serializers.CharField(source='usuario.username', read_only=True)
+    admin_responde_username = serializers.CharField(source='admin_responde.username', read_only=True)
+
+    class Meta:
+        model = PeticionCambioPerfil
+        fields = [
+            'id', 'usuario', 'usuario_username', 'datos_nuevos', 'estado',
+            'fecha_solicitud', 'fecha_respuesta', 'admin_responde', 'admin_responde_username', 'motivo_rechazo'
+        ]
+        read_only_fields = ['estado', 'fecha_solicitud', 'fecha_respuesta', 'admin_responde', 'admin_responde_username', 'usuario_username']

@@ -78,7 +78,7 @@
           <transition name="fade">
             <div v-if="form.persona_natural === 'natural'">
               <div class="vendedor-convertir-group">
-                <label>¿Tienes años de experiencia?</label>
+                <label>¿Tiene alguna experiencia vendiendo vehículos?</label>
                 <select v-model="form.tiene_experiencia">
                   <option disabled value="">Seleccionar</option>
                   <option :value="true">Sí</option>
@@ -87,7 +87,7 @@
               </div>
               <transition name="fade">
                 <div v-if="form.tiene_experiencia === true || form.tiene_experiencia === 'true'" class="vendedor-convertir-group">
-                  <label>¿Cuántos años?</label>
+                  <label>¿Cuántos años de experiencia tiene vendiendo vehículos?</label>
                   <input v-model.number="form.anios_experiencia" type="number" min="0" placeholder="Años de experiencia" />
                 </div>
               </transition>
@@ -183,21 +183,37 @@
               </div>
             </transition>
           </div>
-          <div class="vendedor-convertir-row">
-            <div class="vendedor-convertir-group">
+          <div class="vendedor-convertir-row align-end">
+            <div class="vendedor-convertir-group align-right">
               <label>Recibir novedades</label>
               <select v-model="form.recibir_novedades">
                 <option :value="true">Sí</option>
                 <option :value="false">No</option>
               </select>
             </div>
-            <div class="vendedor-convertir-group">
+            <div class="vendedor-convertir-group align-right">
               <label>Mostrar contacto</label>
               <select v-model="form.mostrar_contacto">
                 <option :value="true">Sí</option>
                 <option :value="false">No</option>
               </select>
             </div>
+          </div>
+          <div class="vendedor-convertir-group">
+            <label for="acepta_politica_select">ACEPTO POLÍTICA DE PRIVACIDAD*</label>
+            <select id="acepta_politica_select" v-model="form.acepta_politica" required>
+              <option disabled value="">Seleccionar</option>
+              <option :value="true">Sí</option>
+              <option :value="false">No</option>
+            </select>
+          </div>
+          <div class="vendedor-convertir-group">
+            <label for="acepta_terminos_select">ACEPTO TÉRMINOS Y CONDICIONES*</label>
+            <select id="acepta_terminos_select" v-model="form.acepta_terminos" required>
+              <option disabled value="">Seleccionar</option>
+              <option :value="true">Sí</option>
+              <option :value="false">No</option>
+            </select>
           </div>
           <div class="vendedor-convertir-actions">
             <button type="button" @click="$emit('close')">Cancelar</button>
@@ -211,7 +227,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import axios from 'axios'
+import api from '../api/axios'
 const props = defineProps<{ userId: number }>()
 const emit = defineEmits(['close', 'success'])
 const form = ref<any>({ persona_natural: '', mostrar_redes: false })
@@ -233,7 +249,7 @@ async function handleSubmit() {
       alert('Por favor ingresa una fecha de nacimiento válida (YYYY-MM-DD)')
       return
     }
-    await axios.post(`/api/usuarios/${props.userId}/convertir_vendedor/`, form.value)
+    await api.post(`/api/usuarios/${props.userId}/convertir_vendedor/`, form.value)
     emit('success')
     emit('close')
   } catch (e: any) {

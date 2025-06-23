@@ -8,17 +8,27 @@
     <div class="admin-tabs-row">
       <nav class="admin-tabs">
         <button :class="{active: activeTab==='usuarios'}" @click="activeTab='usuarios'">
-          <span class="tab-icon"> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          <span class="tab-icon" style="margin-right:0.5em;">
+            <img :class="{ 'tab-icon-active': activeTab==='usuarios' }" src="../svg/panel-usuarios.svg" alt="Usuarios" style="width:22px;height:22px;" />
+          </span>
           Usuarios
         </button>
         <button :class="{active: activeTab==='vehiculos'}" @click="activeTab='vehiculos'">
-          <span class="tab-icon"> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="6" rx="3"/><path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg></span>
+          <span class="tab-icon" style="margin-right:0.5em;">
+            <img :class="{ 'tab-icon-active': activeTab==='vehiculos' }" src="../svg/panel-vehiculos.svg" alt="Vehículos" style="width:22px;height:22px;" />
+          </span>
           Vehículos
         </button>
+        <button :class="{active: activeTab==='peticiones'}" @click="activeTab='peticiones'">
+          <span class="tab-icon" style="margin-right:0.5em;">
+            <img class="peticiones-icon" src="../svg/peticiones.svg" alt="Peticiones" style="width:22px;height:22px;" />
+          </span>
+          Peticiones
+        </button>
       </nav>
-      <div class="admin-add-btn">
+      <div class="admin-add-btn" v-if="activeTab!=='peticiones'">
         <button @click="openModal(activeTab==='usuarios' ? 'usuario' : 'vehiculo')">
-          <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+          <span class="tab-icon"><img :class="{ 'tab-icon-active': true }" src="../svg/panel-agregar.svg" alt="Agregar" style="width:20px;height:20px;" /></span>
           Agregar {{ activeTab==='usuarios' ? 'Usuario' : 'Vehículo' }}
         </button>
       </div>
@@ -118,6 +128,47 @@
           </tr>
         </tbody>
       </table>
+      <div v-if="activeTab==='peticiones'">
+        <h2 style="margin-bottom:1rem;">Peticiones de Cambio de Perfil</h2>
+        <table v-if="peticiones.length">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Usuario</th>
+              <th>Datos Solicitados</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="pet in peticiones" :key="pet.id">
+              <td>{{ pet.id }}</td>
+              <td>{{ pet.usuario_username }}</td>
+              <td>
+                <ul v-if="pet.datos_nuevos && Object.keys(pet.datos_nuevos).length" style="margin:0;padding:0 0 0 1.1em;list-style:square inside;font-size:1em;">
+                  <li v-for="(valor, campo) in pet.datos_nuevos" :key="campo">
+                    <b>{{ campo === 'username' ? 'Usuario' : campo === 'email' ? 'Email' : campo === 'password' ? 'Contraseña' : campo }}:</b>
+                    <span v-if="campo !== 'password'">{{ valor }}</span>
+                    <span v-else>••••••••</span>
+                  </li>
+                </ul>
+                <span v-else style="color:#b91c1c;font-weight:600;">Sin datos solicitados</span>
+              </td>
+              <td>
+                <span :style="{color: pet.estado==='pendiente' ? '#b7791f' : pet.estado==='aprobada' ? '#38a169' : '#e53e3e', fontWeight:'bold'}">{{ pet.estado }}</span>
+                <div v-if="pet.estado==='rechazada' && pet.razon_rechazo" style="font-size:0.95em;color:#b91c1c;">Motivo: {{ pet.razon_rechazo }}</div>
+              </td>
+              <td>
+                <div v-if="pet.estado==='pendiente'" style="display:flex;gap:0.5rem;align-items:center;">
+                  <button @click="aprobarPeticion(pet.id)" class="peticion-aprobar-btn">Aprobar</button>
+                  <button @click="rechazarPeticion(pet.id)" class="peticion-rechazar-btn">Rechazar</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div v-else style="color:#b91c1c;font-weight:600;">No hay peticiones registradas.</div>
+      </div>
     </div>
     <!-- Modal -->
     <div v-if="showModal" class="admin-modal-overlay">
@@ -404,7 +455,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+import api from '../api/axios'
+import { useLoaderStore } from '../store/loader'
 import '../styles/AdminPanel.css'
 import openDoor from '../svg/open-door.svg?url'
 import openClosed from '../svg/open-closed.svg?url'
@@ -415,7 +467,7 @@ import infoIcon from '../svg/info.svg?url'
 import editarCarroIcon from '../svg/editar_carro.svg?url'
 import detallarIcon from '../svg/detallar.svg.svg?url'
 
-const activeTab = ref<'usuarios'|'vehiculos'>('usuarios')
+const activeTab = ref<'usuarios'|'vehiculos'|'peticiones'>('usuarios')
 const showModal = ref(false)
 const modalType = ref<'usuario'|'vehiculo'>('usuario')
 const editingItem = ref<any>(null)
@@ -424,29 +476,23 @@ const showPassword = ref(false)
 
 const usuarios = ref<any[]>([])
 const vehiculos = ref<any[]>([])
+const peticiones = ref<any[]>([])
 
 const currentUser = ref({
   id: 100,
   tipo: 'admin'
 })
 const hasPermission = computed(() => ["admin", "admin_mayor"].includes(currentUser.value.tipo))
+const loader = useLoaderStore();
 
 onMounted(async () => {
+  loader.show();
   try {
-    const resUsuarios = await axios.get('/api/usuarios/listar/')
-    usuarios.value = resUsuarios.data.map((u: any) => ({
-      id: u.id,
-      usuario: u.username,
-      email: u.email,
-      tipo: mapTipoUsuario(u.tipo_usuario)
-    }))
-    const resVehiculos = await axios.get('/api/vehiculos/listar/')
-    vehiculos.value = resVehiculos.data.map((v: any) => ({
-      ...v,
-      anio: v.anio || v.año || v.year
-    }))
-  } catch (e) {
-    console.error('Error cargando usuarios o vehículos:', e)
+    await fetchUsuarios();
+    await fetchVehiculos();
+    await fetchPeticiones();
+  } finally {
+    loader.hide();
   }
 })
 
@@ -520,8 +566,8 @@ async function handleSubmit() {
           tipo_usuario: tipo_usuario
         }
         if (formData.value.password && formData.value.password !== '') payload.password = formData.value.password
-        await axios.put(`/api/usuarios/${editingItem.value.id}/editar/`, payload)
-        const res = await axios.get('/api/usuarios/listar/')
+        await api.put(`/api/usuarios/${editingItem.value.id}/editar/`, payload)
+        const res = await api.get('/api/usuarios/listar/')
         usuarios.value = res.data.map((u: any) => ({
           id: u.id,
           usuario: u.username,
@@ -535,8 +581,8 @@ async function handleSubmit() {
           tipo_usuario: tipo_usuario,
           password: formData.value.password
         }
-        await axios.post('/api/usuarios/register/', payload)
-        const res = await axios.get('/api/usuarios/listar/')
+        await api.post('/api/usuarios/register/', payload)
+        const res = await api.get('/api/usuarios/listar/')
         usuarios.value = res.data.map((u: any) => ({
           id: u.id,
           usuario: u.username,
@@ -562,7 +608,7 @@ async function handleSubmit() {
       if (formData.value.imagenTipo === 'archivo' && formData.value.imagenArchivo) {
         const imgData = new FormData()
         imgData.append('imagen', formData.value.imagenArchivo)
-        const resImg = await axios.post('/api/vehiculos/upload_imagen/', imgData, { headers: { 'Content-Type': 'multipart/form-data' } })
+        const resImg = await api.post('/api/vehiculos/upload_imagen/', imgData, { headers: { 'Content-Type': 'multipart/form-data' } })
         payload.imagen = resImg.data.url || resImg.data.imagen || ''
       }
       // Siempre eliminar los campos auxiliares y NUNCA enviar imagen_archivo
@@ -572,11 +618,11 @@ async function handleSubmit() {
       // Nunca enviar imagen_archivo (por si acaso)
       delete payload.imagen_archivo
       if (editingItem.value) {
-        await axios.put(`/api/vehiculos/${editingItem.value.id}/editar/`, payload)
+        await api.put(`/api/vehiculos/${editingItem.value.id}/editar/`, payload)
       } else {
-        await axios.post('/api/vehiculos/crear/', payload)
+        await api.post('/api/vehiculos/crear/', payload)
       }
-      const resVehiculos = await axios.get('/api/vehiculos/listar/')
+      const resVehiculos = await api.get('/api/vehiculos/listar/')
       vehiculos.value = resVehiculos.data.map((v: any) => ({
         ...v,
         anio: v.anio || v.año || v.year
@@ -591,10 +637,10 @@ async function handleSubmit() {
 function deleteItem(id: number, type: 'usuario'|'vehiculo') {
   if (type === 'usuario') {
     usuarios.value = usuarios.value.filter(u => u.id !== id)
-    axios.delete(`/api/usuarios/${id}/eliminar/`).catch(() => {})
+    api.delete(`/api/usuarios/${id}/eliminar/`).catch(() => {})
   } else {
     vehiculos.value = vehiculos.value.filter(v => v.id !== id)
-    axios.delete(`/api/vehiculos/${id}/eliminar/`).catch(() => {})
+    api.delete(`/api/vehiculos/${id}/eliminar/`).catch(() => {})
   }
 }
 async function toggleAdmin(id: number) {
@@ -610,7 +656,7 @@ async function toggleAdmin(id: number) {
     tipo_usuario = 'admin'
   } else if (usuario.tipo === 'Admin Mayor') return
   try {
-    await axios.put(`/api/usuarios/${id}/editar/`, {
+    await api.put(`/api/usuarios/${id}/editar/`, {
       username: usuario.usuario,
       email: usuario.email,
       tipo_usuario
@@ -685,7 +731,7 @@ const userDetails = ref<any>(null)
 async function openUserDetails(usuario: any) {
   try {
     // Obtener datos completos del usuario desde la API
-    const res = await axios.get(`/api/usuarios/${usuario.id}/detalle/`)
+    const res = await api.get(`/api/usuarios/${usuario.id}/detalle/`)
     userDetails.value = res.data
   } catch (e) {
     userDetails.value = { ...usuario }
@@ -696,36 +742,80 @@ function closeUserDetails() {
   showUserDetails.value = false
   userDetails.value = null
 }
-</script>
 
-<style>
-.user-details-modal {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.09);
-  padding: 0;
-  overflow: hidden;
+// Nuevas funciones y estados para peticiones
+function pretty(obj: any) {
+  try {
+    return JSON.stringify(obj, null, 2)
+  } catch {
+    return obj
+  }
 }
-.user-details-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.38rem 0;
-  border-bottom: 1px solid #f5f5f5;
-  font-size: 1rem;
-  color: #333;
+
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
-.user-details-row:last-child {
-  border-bottom: none;
+
+async function fetchUsuarios() {
+  loader.show();
+  try {
+    const res = await api.get('/api/usuarios/');
+    await delay(1000);
+    usuarios.value = res.data;
+  } catch (e) {
+    usuarios.value = [];
+  } finally {
+    loader.hide();
+  }
 }
-.form-section-title {
-  font-size: 1.08rem;
-  font-weight: 600;
-  color: #2d3748;
-  margin: 1.2rem 0 0.7rem 0;
-  letter-spacing: 0.01em;
-  border-left: 3px solid #e53e3e;
-  padding-left: 0.7rem;
-  background: none;
+
+async function fetchVehiculos() {
+  loader.show();
+  try {
+    const res = await api.get('/api/vehiculos/');
+    await delay(1000);
+    vehiculos.value = res.data;
+  } catch (e) {
+    vehiculos.value = [];
+  } finally {
+    loader.hide();
+  }
 }
-</style>
+
+async function fetchPeticiones() {
+  loader.show();
+  try {
+    const res = await api.get('/api/usuarios/peticiones_cambio/');
+    await delay(1000);
+    peticiones.value = res.data;
+  } catch (e) {
+    peticiones.value = [];
+  } finally {
+    loader.hide();
+  }
+}
+
+async function aprobarPeticion(id: number) {
+  try {
+    await api.post(`/api/usuarios/peticion_cambio/${id}/aprobar/`)
+    await fetchPeticiones()
+  } catch (e) {
+    alert('Error al aprobar la petición')
+  }
+}
+
+async function rechazarPeticion(id: number) {
+  const razon = prompt('Motivo del rechazo:')
+  try {
+    await api.post(`/api/usuarios/peticion_cambio/${id}/rechazar/`, { razon_rechazo: razon })
+    await fetchPeticiones()
+  } catch (e) {
+    alert('Error al rechazar la petición')
+  }
+}
+
+// Filtro para mostrar JSON bonito en tabla
+const app = { config: { globalProperties: {} } } as any
+if (typeof app.config.globalProperties.$filters === 'undefined') app.config.globalProperties.$filters = {}
+app.config.globalProperties.$filters.pretty = pretty
+</script>

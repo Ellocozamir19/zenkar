@@ -111,12 +111,21 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
   transform: scale(1.04);
 }
-.admin-mayor-tabs button .tab-icon svg {
-  stroke: var(--rojo);
+.admin-mayor-tabs button .tab-icon svg,
+.vehiculos-btn button .tab-icon svg {
+  stroke: #111 !important;
+  fill: none !important;
   transition: stroke 0.18s;
 }
 .admin-mayor-tabs button.active .tab-icon svg {
-  stroke: #fff;
+  stroke: #fff !important;
+}
+/* Special case: Peticiones icon is white only when active, black otherwise */
+.peticiones-btn button .peticiones-icon {
+  stroke: #111 !important;
+}
+.peticiones-btn button.active .peticiones-icon {
+  stroke: #fff !important;
 }
 .vehiculos-btn button {
   background: #fff !important;
@@ -303,11 +312,22 @@
 .admin-mayor-content td.actions-col {
   text-align: right;
   padding-right: 2rem;
+  color: var(--negro2) !important; /* Asegura que el texto sea visible */
+  background: none;
 }
 
-.admin-mayor-content td.actions-col .action-buttons {
-  gap: 0.5rem;
-  padding-right: 0.2rem;
+.admin-mayor-content th.actions-col {
+  text-align: center;
+  padding-right: 0;
+  color: var(--negro2) !important; /* Asegura que el texto sea visible */
+  background: none;
+}
+
+.admin-mayor-content td.actions-col {
+  text-align: right;
+  padding-right: 1.2rem;
+  color: var(--negro2) !important; /* Asegura que el texto sea visible */
+  background: none;
 }
 
 .admin-mayor-content td:first-child {
@@ -462,6 +482,29 @@
   gap: 0;
   justify-content: flex-end;
   padding-right: 0;
+}
+
+.admin-mayor-content .action-buttons button {
+  background: #f6e05e;
+  color: #222 !important;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  padding: 0.3rem 0.7rem;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  opacity: 1 !important;
+  box-shadow: 0 1px 4px #e5e7eb;
+  transition: background 0.2s;
+}
+.admin-mayor-content .action-buttons button:last-child {
+  background: #fed7d7;
+  color: #b91c1c !important;
+  margin-right: 0;
+}
+.admin-mayor-content .action-buttons button:hover {
+  filter: brightness(0.95);
+  opacity: 1 !important;
 }
 
 .user-cell {
@@ -642,6 +685,29 @@
   gap: 0;
   justify-content: flex-end;
   padding-right: 0;
+}
+
+.admin-mayor-content .action-buttons button {
+  background: #f6e05e;
+  color: #222 !important;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  padding: 0.3rem 0.7rem;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  opacity: 1 !important;
+  box-shadow: 0 1px 4px #e5e7eb;
+  transition: background 0.2s;
+}
+.admin-mayor-content .action-buttons button:last-child {
+  background: #fed7d7;
+  color: #b91c1c !important;
+  margin-right: 0;
+}
+.admin-mayor-content .action-buttons button:hover {
+  filter: brightness(0.95);
+  opacity: 1 !important;
 }
 
 .user-cell {
@@ -861,4 +927,103 @@
     padding-left: 0.5rem;
     padding-right: 0.5rem;
   }
+}
+
+/* Título de peticiones: centrado, rojo, grande y bonito */
+.peticiones-title {
+  color: #e53e3e;
+  font-weight: 800;
+  font-size: 1.45em;
+  text-align: center;
+  margin-bottom: 1.1em;
+  margin-top: 0.5em;
+  letter-spacing: 0.01em;
+  background: none;
+  border-radius: 0;
+  padding: 0.2em 0;
+  line-height: 1.2;
+}
+
+.peticiones-btn button {
+  min-width: 180px !important;
+  max-width: 260px !important;
+  width: auto !important;
+}
+.peticiones-btn button:not(.active) {
+  background: #fff !important;
+  color: #111 !important;
+  border: 2px solid var(--rojo);
+}
+.peticiones-btn button:not(.active) .peticiones-icon {
+  filter: none !important;
+  opacity: 1 !important;
+}
+.peticiones-btn button.active {
+  background: var(--rojo) !important;
+  color: #fff !important;
+  border: 2px solid var(--rojo);
+}
+.peticiones-btn button.active .peticiones-icon {
+  filter: brightness(0) invert(1) !important;
+  opacity: 1 !important;
+}
+.peticiones-btn button .peticiones-icon {
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+  margin: 0 !important;
+  transition: filter 0.18s;
+}
+.admin-mayor-tabs button .tab-icon img,
+.vehiculos-btn button .tab-icon img {
+  filter: none !important;
+  transition: filter 0.18s;
+}
+.admin-mayor-tabs button.active .tab-icon img.tab-icon-active,
+.vehiculos-btn button.active .tab-icon img.tab-icon-active {
+  filter: brightness(0) invert(1) !important;
+}
+.peticiones-btn button {
+  border: none !important;
+}
+
+/**
+ * FUERZA la alineación a la izquierda de los checkboxes legales y su texto en el modal de vendedor
+ * para AdminMayorPanel y cualquier modal overlay.
+ */
+.admin-mayor-panel-full .vendedor-convertir-group.legal-align,
+.admin-mayor-panel-full .vendedor-convertir-group.legal-align label,
+.admin-mayor-panel-full .vendedor-convertir-group.legal-align span,
+.admin-mayor-panel-full .vendedor-convertir-group.legal-align input[type="checkbox"] {
+  text-align: left !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  align-self: flex-start !important;
+}
+.admin-mayor-panel-full .vendedor-convertir-group.legal-align label {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.25em !important;
+  font-weight: 500 !important;
+  margin-bottom: 0.4rem !important;
+  color: #ccc !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+  width: 100% !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+.admin-mayor-panel-full .vendedor-convertir-group.legal-align input[type="checkbox"] {
+  margin-right: 0.5em !important;
+  margin-left: 0 !important;
+  accent-color: #dc2626 !important;
+  vertical-align: middle !important;
+}
+.admin-mayor-panel-full .vendedor-convertir-group.legal-align span {
+  text-align: left !important;
+  justify-content: flex-start !important;
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }

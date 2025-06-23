@@ -60,3 +60,21 @@ class Usuario(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.tipo_usuario})"
+
+class PeticionCambioPerfil(models.Model):
+    ESTADO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('aprobada', 'Aprobada'),
+        ('rechazada', 'Rechazada'),
+    ]
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='peticiones_cambio')
+    # Campos que el usuario quiere cambiar (guardados como JSON)
+    datos_nuevos = models.JSONField()
+    estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')
+    fecha_solicitud = models.DateTimeField(auto_now_add=True)
+    fecha_respuesta = models.DateTimeField(null=True, blank=True)
+    admin_responde = models.ForeignKey(Usuario, null=True, blank=True, on_delete=models.SET_NULL, related_name='peticiones_resueltas')
+    motivo_rechazo = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Petición de {self.usuario.username} ({self.estado})"

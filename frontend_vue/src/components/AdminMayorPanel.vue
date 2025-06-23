@@ -15,79 +15,92 @@
           <nav class="admin-mayor-tabs">
             <button :class="{active: activeTab==='usuarios'}" @click="activeTab='usuarios'">
               <span class="tab-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <img :class="{ 'tab-icon-active': activeTab==='usuarios' }" src="../svg/panel-usuarios.svg" alt="Usuarios" style="width:22px;height:22px;" />
               </span>
-              Usuarios
+              <span style="margin-left:0.5em;">Usuarios</span>
             </button>
           </nav>
           <div class="vehiculos-btn">
             <button :class="{active: activeTab==='vehiculos'}" @click="activeTab='vehiculos'">
               <span class="tab-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="6" rx="3"/><path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
+                <img :class="{ 'tab-icon-active': activeTab==='vehiculos' }" src="../svg/panel-vehiculos.svg" alt="Vehículos" style="width:22px;height:22px;" />
               </span>
-              Vehículos
+              <span style="margin-left:0.5em;">Vehículos</span>
             </button>
           </div>
-          <div class="admin-mayor-add-btn">
+          <div class="peticiones-btn">
+            <button :class="{active: activeTab==='peticiones'}" @click="activeTab='peticiones'">
+              <span class="tab-icon" style="margin-right:0.5em;display:inline-flex;align-items:center;">
+                <img class="peticiones-icon" src="../svg/peticiones.svg" alt="Peticiones" style="width:22px;height:22px;" />
+              </span>
+              <span>Peticiones</span>
+            </button>
+          </div>
+          <div class="admin-mayor-add-btn" v-if="activeTab!=='peticiones'">
             <button @click="openModal(activeTab==='usuarios' ? 'usuario' : 'vehiculo')">
-              <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+              <span class="tab-icon" style="display:inline-flex;align-items:center;justify-content:center;margin-right:0.5em;">
+                <img src="../svg/panel-agregar.svg" alt="Agregar" style="width:20px;height:20px;filter:invert(1);" />
+              </span>
               Agregar {{ activeTab==='usuarios' ? 'Usuario' : 'Vehículo' }}
             </button>
           </div>
         </div>
         <!-- Content -->
-        <div class="admin-mayor-content">
-          <div v-if="activeTab==='usuarios'" class="admin-search-row">
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Buscar por usuario o email..."
-              class="admin-search-input"
-              autocomplete="off"
-            />
+        <div class="admin-mayor-content" style="padding-left: 4px; padding-right: 36px;">
+          <!-- Usuarios Tab -->
+          <div v-if="activeTab==='usuarios'">
+            <div class="admin-search-row">
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Buscar por usuario o email..."
+                class="admin-search-input"
+                autocomplete="off"
+              />
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Email</th>
+                  <th>Tipo</th>
+                  <th class="actions-col">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="usuario in filteredUsuarios" :key="usuario.id">
+                  <td>
+                    <div class="user-cell">
+                      <div class="admin-mayor-user-avatar-sm">{{ usuario.usuario.charAt(0) }}</div>
+                      <span>{{ usuario.usuario }}</span>
+                    </div>
+                  </td>
+                  <td>{{ usuario.email }}</td>
+                  <td>
+                    <span :class="['admin-mayor-type-chip', usuario.tipo==='Admin' ? 'admin' : '', usuario.tipo==='Admin Mayor' ? 'mayor' : '', usuario.tipo==='Vendedor' ? 'vendedor' : '', usuario.tipo==='Usuario' ? 'usuario' : '']">{{ usuario.tipo }}</span>
+                  </td>
+                  <td class="actions-col">
+                    <div class="action-buttons">
+                      <button @click="openModal('usuario', usuario)" title="Editar" class="action-btn-edit">
+                        <img :src="editIcon" alt="Editar" class="action-icon" />
+                      </button>
+                      <button @click="toggleAdmin(usuario.id)" title="Cambiar rol" class="action-btn-role">
+                        <img :src="roleIcon" alt="Cambiar rol" class="action-icon" />
+                      </button>
+                      <button @click="deleteItem(usuario.id, 'usuario')" title="Eliminar" class="action-btn-delete">
+                        <img :src="deleteIcon" alt="Eliminar" class="action-icon" />
+                      </button>
+                      <button @click="openUserDetails(usuario)" title="Ver detalles" class="action-btn-details">
+                        <img :src="detallarIcon" alt="Detalles" class="action-icon" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <table v-if="activeTab==='usuarios'">
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Email</th>
-                <th>Tipo</th>
-                <th class="actions-col">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="usuario in filteredUsuarios" :key="usuario.id">
-                <td>
-                  <div class="user-cell">
-                    <div class="admin-mayor-user-avatar-sm">{{ usuario.usuario.charAt(0) }}</div>
-                    <span>{{ usuario.usuario }}</span>
-                  </div>
-                </td>
-                <td>{{ usuario.email }}</td>
-                <td>
-                  <span :class="['admin-mayor-type-chip', usuario.tipo==='Admin' ? 'admin' : '', usuario.tipo==='Admin Mayor' ? 'mayor' : '', usuario.tipo==='Vendedor' ? 'vendedor' : '', usuario.tipo==='Usuario' ? 'usuario' : '']">{{ usuario.tipo }}</span>
-                </td>
-                <td class="actions-col">
-                  <div class="action-buttons">
-                    <button @click="openModal('usuario', usuario)" title="Editar" class="action-btn-edit">
-                      <img :src="editIcon" alt="Editar" class="action-icon" />
-                    </button>
-                    <button @click="toggleAdmin(usuario.id)" title="Cambiar rol" class="action-btn-role">
-                      <img :src="roleIcon" alt="Cambiar rol" class="action-icon" />
-                    </button>
-                    <button @click="deleteItem(usuario.id, 'usuario')" title="Eliminar" class="action-btn-delete">
-                      <img :src="deleteIcon" alt="Eliminar" class="action-icon" />
-                    </button>
-                    <button @click="openUserDetails(usuario)" title="Ver detalles" class="action-btn-details">
-                      <img :src="detallarIcon" alt="Detalles" class="action-icon" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div v-else>
-            <!-- Buscador de vehículos -->
+          <!-- Vehiculos Tab -->
+          <div v-if="activeTab==='vehiculos'">
             <div class="admin-search-row">
               <input
                 v-model="searchVehiculo"
@@ -132,6 +145,48 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+          <!-- Peticiones Tab -->
+          <div v-if="activeTab==='peticiones'">
+            <div class="peticiones-title">Peticiones de Cambio de Perfil</div>
+            <table v-if="peticiones.length">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Usuario</th>
+                  <th>Datos Solicitados</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="pet in peticiones" :key="pet.id">
+                  <td>{{ pet.id }}</td>
+                  <td>{{ pet.usuario_username }}</td>
+                  <td>
+                    <ul v-if="pet.datos_nuevos && Object.keys(pet.datos_nuevos).length" style="margin:0;padding:0 0 0 1.1em;list-style:square inside;font-size:1em;">
+                      <li v-for="(valor, campo) in pet.datos_nuevos" :key="campo">
+                        <b>{{ campo === 'username' ? 'Usuario' : campo === 'email' ? 'Email' : campo === 'password' ? 'Contraseña' : campo }}:</b>
+                        <span v-if="campo !== 'password'">{{ valor }}</span>
+                        <span v-else>••••••••</span>
+                      </li>
+                    </ul>
+                    <span v-else style="color:#b91c1c;font-weight:600;">Sin datos solicitados</span>
+                  </td>
+                  <td>
+                    <span :style="{color: pet.estado==='pendiente' ? '#b7791f' : pet.estado==='aprobada' ? '#38a169' : '#e53e3e', fontWeight:'bold'}">{{ pet.estado }}</span>
+                    <div v-if="pet.estado==='rechazada' && pet.razon_rechazo" style="font-size:0.95em;color:#b91c1c;">Motivo: {{ pet.razon_rechazo }}</div>
+                  </td>
+                  <td>
+                    <div v-if="pet.estado==='pendiente'" style="display:flex;gap:0.5rem;align-items:center;">
+                      <button @click="aprobarPeticion(pet.id)" class="peticion-aprobar-btn">Aprobar</button>
+                      <button @click="rechazarPeticion(pet.id)" class="peticion-rechazar-btn">Rechazar</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-else style="color:#b91c1c;font-weight:600;">No hay peticiones registradas.</div>
           </div>
         </div>
         <!-- Modal -->
@@ -424,6 +479,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import api from '../api/axios'
+import { useLoaderStore } from '../store/loader'
 import '../styles/AdminMayorPanel.css'
 import openDoor from '../svg/open-door.svg?url'
 import openClosed from '../svg/open-closed.svg?url'
@@ -435,7 +491,7 @@ import editarCarroIcon from '../svg/editar_carro.svg?url'
 import detallarIcon from '../svg/detallar.svg.svg?url'
 import { useAuthStore } from '../store/auth'
 
-const activeTab = ref<'usuarios'|'vehiculos'>('usuarios')
+const activeTab = ref<'usuarios'|'vehiculos'|'peticiones'>('usuarios')
 const showModal = ref(false)
 const modalType = ref<'usuario'|'vehiculo'>('usuario')
 const editingItem = ref<any>(null)
@@ -460,6 +516,7 @@ const filteredVehiculos = computed(() => {
     ((v.anio + '').includes(q))
   )
 })
+const peticiones = ref<any[]>([])
 
 const auth = useAuthStore()
 auth.loadUser()
@@ -469,23 +526,67 @@ const hasPermission = computed(() => (currentUser.value?.tipo || currentUser.val
 const usuarios = ref<any[]>([])
 const vehiculos = ref<any[]>([])
 
-onMounted(async () => {
+const loader = useLoaderStore();
+
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function fetchUsuarios() {
+  loader.show();
   try {
-    const resUsuarios = await api.get('/api/usuarios/listar/')
-    usuarios.value = resUsuarios.data.map((u: any) => ({
+    const res = await api.get('/api/usuarios/listar/');
+    await delay(1000);
+    usuarios.value = res.data.map((u: any) => ({
       id: u.id,
       usuario: u.username,
       email: u.email,
-      tipo: mapTipoUsuario(u.tipo_usuario)
-    }))
-    // Cargar vehículos reales
-    const resVehiculos = await api.get('/api/vehiculos/listar/')
-    vehiculos.value = resVehiculos.data.map((v: any) => ({
-      ...v,
-      anio: v.anio || v.año || v.year // siempre usar anio
-    }))
+      tipo: mapTipoUsuario(u.tipo_usuario),
+      tipo_usuario: u.tipo_usuario
+    }));
   } catch (e) {
-    console.error('Error cargando usuarios o vehículos:', e)
+    usuarios.value = [];
+  } finally {
+    loader.hide();
+  }
+}
+
+async function fetchVehiculos() {
+  loader.show();
+  try {
+    const res = await api.get('/api/vehiculos/listar/');
+    await delay(1000);
+    vehiculos.value = res.data.map((v: any) => ({
+      ...v,
+    }));
+  } catch (e) {
+    vehiculos.value = [];
+  } finally {
+    loader.hide();
+  }
+}
+
+async function fetchPeticiones() {
+  loader.show();
+  try {
+    const res = await api.get('/api/usuarios/peticiones_cambio/');
+    await delay(1000);
+    peticiones.value = res.data;
+  } catch (e) {
+    peticiones.value = [];
+  } finally {
+    loader.hide();
+  }
+}
+
+onMounted(async () => {
+  loader.show();
+  try {
+    await fetchUsuarios();
+    await fetchVehiculos();
+    await fetchPeticiones();
+  } finally {
+    loader.hide();
   }
 })
 
@@ -668,6 +769,8 @@ async function toggleAdmin(id: number) {
     usuarios.value = usuarios.value.map(u =>
       u.id === id ? { ...u, tipo: nuevoTipo, tipo_usuario } : u
     )
+    // Notificar a otras pestañas/sesiones del cambio de rol
+    localStorage.setItem(`user_role_updated:${id}`, Date.now().toString())
   } catch (e: any) {
     if (e.response && e.response.data && e.response.data.detail) {
       alert('Error: ' + e.response.data.detail)
@@ -724,5 +827,13 @@ async function openUserDetails(usuario: any) {
 function closeUserDetails() {
   showUserDetails.value = false
   userDetails.value = null
+}
+
+function pretty(obj: any) {
+  try {
+    return JSON.stringify(obj, null, 2)
+  } catch {
+    return obj
+  }
 }
 </script>

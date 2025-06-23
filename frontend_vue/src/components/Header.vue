@@ -37,7 +37,7 @@
         <div v-if="isAuthenticated" class="user-area" @click.stop="toggleUserPanel">
           <button class="user-button">
             <div class="user-avatar">{{ userInitials }}</div>
-            <span>{{ user.username }}</span>
+            <span v-if="user">{{ user.username }}</span>
             <svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
@@ -45,17 +45,17 @@
           <!-- Panel de Usuario -->
           <div class="user-panel" :class="{ show: userPanelOpen }" ref="userPanel" @click.stop>
             <div class="user-panel-header">
-              <div class="user-panel-name">{{ user.username }}</div>
-              <div class="user-panel-email">{{ user.email }}</div>
-              <div v-if="user.tipo_usuario" class="user-type-badge">
+              <div class="user-panel-name" v-if="user">{{ user.username }}</div>
+              <div class="user-panel-email" v-if="user">{{ user.email }}</div>
+              <div v-if="user && user.tipo_usuario" class="user-type-badge">
                 <span class="user-type-icon">
-                  <template v-if="user.tipo_usuario === 'admin_mayor'">
+                  <template v-if="user && user.tipo_usuario === 'admin_mayor'">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 8.5 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 9 8.5 12 2"/></svg>
                   </template>
-                  <template v-else-if="user.tipo_usuario === 'admin'">
+                  <template v-else-if="user && user.tipo_usuario === 'admin'">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                   </template>
-                  <template v-else-if="user.tipo_usuario === 'vendedor'">
+                  <template v-else-if="user && user.tipo_usuario === 'vendedor'">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3v4M8 3v4M2 11h20"/></svg>
                   </template>
                   <template v-else>
@@ -198,7 +198,72 @@ onMounted(() => {
     }
   }
   document.addEventListener('click', handleClickOutside)
+  // Escuchar cambios de usuario en otras pestañas
+  window.addEventListener('storage', async (event) => {
+    if (event.key === 'user') {
+      if (event.newValue) {
+        user.value = JSON.parse(event.newValue)
+      } else {
+        user.value = null
+      }
+    }
+    // Detectar actualización de rol para este usuario
+    if (event.key && event.key.startsWith('user_role_updated:')) {
+      const idStr = event.key.split(':')[1]
+      if (user.value && String(user.value.id) === idStr) {
+        // Volver a obtener el usuario del backend
+        try {
+          const res = await import('../api/axios')
+          const api = res.default
+          const response = await api.get(`/api/usuarios/me/`)
+          if (response.data) {
+            const u = response.data
+            if (u.tipo_usuario === 'admin_mayor') u.tipo = 'Admin Mayor'
+            else if (u.tipo_usuario === 'admin') u.tipo = 'Admin'
+            else if (u.tipo_usuario === 'vendedor') u.tipo = 'Vendedor'
+            else u.tipo = 'Usuario'
+            user.value = u
+            localStorage.setItem('user', JSON.stringify(u))
+            try {
+              const { useAuthStore } = await import('../store/auth')
+              useAuthStore().setUser(u)
+            } catch {}
+          }
+        } catch (e) {
+          // Manejar error opcionalmente
+        }
+      }
+    }
+  })
+
+  // --- POLLING para cambios de rol en tiempo real ---
+  setInterval(async () => {
+    if (user.value && user.value.id) {
+      try {
+        const res = await import('../api/axios')
+        const api = res.default
+        const response = await api.get(`/api/usuarios/me/`)
+        if (response.data) {
+          const u = response.data
+          if (u.tipo_usuario === 'admin_mayor') u.tipo = 'Admin Mayor'
+          else if (u.tipo_usuario === 'admin') u.tipo = 'Admin'
+          else if (u.tipo_usuario === 'vendedor') u.tipo = 'Vendedor'
+          else u.tipo = 'Usuario'
+          // Solo actualizar si el tipo cambió
+          if (u.tipo_usuario !== user.value.tipo_usuario) {
+            user.value = u
+            localStorage.setItem('user', JSON.stringify(u))
+            try {
+              const { useAuthStore } = await import('../store/auth')
+              useAuthStore().setUser(u)
+            } catch {}
+          }
+        }
+      } catch (e) {}
+    }
+  }, 30000) // 30 segundos
 })
+
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })

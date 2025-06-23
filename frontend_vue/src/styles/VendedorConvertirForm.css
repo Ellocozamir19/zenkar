@@ -63,14 +63,18 @@
   width: 100%;
 }
 
-.vendedor-convertir-group label, label {
-  display: block;
-  color: #ccc;
-  font-size: 0.85rem;
-  font-weight: 600;
+.vendedor-convertir-group label,
+label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6em;
+  font-weight: 500;
   margin-bottom: 0.4rem;
+  color: #ccc;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  width: 100%;
 }
 
 .vendedor-convertir-group input {
@@ -88,6 +92,18 @@
   text-align: left;
 }
 
+.vendedor-convertir-group input[type="checkbox"] {
+  margin-right: 0.7em;
+  margin-left: 0;
+  accent-color: #dc2626;
+}
+
+.vendedor-convertir-group span {
+  text-align: left !important;
+  justify-content: flex-start !important;
+  display: inline-block;
+}
+
 .vendedor-convertir-group select {
   width: 100% !important;
   max-width: 100% !important;
@@ -100,14 +116,12 @@
   box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
   transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
-  text-align: center;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  text-align: left !important;
+  padding-left: 1rem;
 }
 
 .vendedor-convertir-group option {
-  text-align: center;
+  text-align: left !important;
 }
 
 .vendedor-convertir-group input::placeholder,
@@ -139,6 +153,13 @@ select:focus {
 .form-row .form-group {
   flex: 1;
   min-width: 220px;
+}
+
+.vendedor-convertir-row.align-end,
+.vendedor-convertir-group.align-right {
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  text-align: left !important;
 }
 
 .vendedor-convertir-actions, .form-actions {
@@ -215,6 +236,40 @@ select:focus {
 .fade-enter-to, .fade-leave-from {
   max-height: 500px;
   opacity: 1;
+}
+
+.vendedor-convertir-group.legal-align,
+.vendedor-convertir-group.legal-align label,
+.vendedor-convertir-group.legal-align span,
+.vendedor-convertir-group.legal-align input[type="checkbox"] {
+  text-align: left !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  align-self: flex-start !important;
+  display: flex !important;
+}
+.vendedor-convertir-group.legal-align label {
+  flex-direction: row !important;
+  gap: 0.25em !important;
+  width: 100% !important;
+  font-weight: 500 !important;
+  color: #ccc !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+  margin-bottom: 0.4rem !important;
+}
+.vendedor-convertir-group.legal-align input[type="checkbox"] {
+  margin-right: 0.5em !important;
+  margin-left: 0 !important;
+  accent-color: #dc2626 !important;
+  vertical-align: middle !important;
+}
+.vendedor-convertir-group.legal-align span {
+  text-align: left !important;
+  justify-content: flex-start !important;
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 @media (max-width: 900px) {

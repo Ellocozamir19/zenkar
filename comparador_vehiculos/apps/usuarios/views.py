@@ -9,12 +9,13 @@ from rest_framework.response import Response
 from rest_framework import status, generics, permissions
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import login
-from .serializers import RegistroSerializer, LoginSerializer
-from .models import Usuario
+from .serializers import RegistroSerializer, LoginSerializer, PeticionCambioPerfilSerializer
+from .models import Usuario, PeticionCambioPerfil
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 from django.conf import settings
 from django.http import JsonResponse
+from django.utils import timezone
 import traceback
 import logging
 logger = logging.getLogger(__name__)
@@ -189,6 +190,73 @@ class ConvertirVendedorView(APIView):
         except Exception as e:
             logger.error(f"Error al convertir a vendedor: {str(e)}", exc_info=True)
             return Response({'error': 'Error interno del servidor', 'details': str(e)}, status=500)
+
+class PeticionCambioPerfilView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        # Un usuario envía una petición de cambio de perfil
+        datos_nuevos = request.data.get('datos_nuevos')
+        if not datos_nuevos:
+            return Response({'detail': 'Faltan los datos nuevos.'}, status=400)
+        peticion = PeticionCambioPerfil.objects.create(
+            usuario=request.user,
+            datos_nuevos=datos_nuevos
+        )
+        return Response(PeticionCambioPerfilSerializer(peticion).data, status=201)
+
+class PeticionCambioPerfilListView(generics.ListAPIView):
+    serializer_class = PeticionCambioPerfilSerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset = PeticionCambioPerfil.objects.all().order_by('-fecha_solicitud')
+
+class PeticionCambioPerfilAprobarView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+    def post(self, request, id):
+        try:
+            peticion = PeticionCambioPerfil.objects.get(id=id)
+        except PeticionCambioPerfil.DoesNotExist:
+            return Response({'detail': 'Petición no encontrada.'}, status=404)
+        if peticion.estado != 'pendiente':
+            return Response({'detail': 'La petición ya fue resuelta.'}, status=400)
+        # Aplicar los cambios al usuario
+        for campo, valor in peticion.datos_nuevos.items():
+            setattr(peticion.usuario, campo, valor)
+        peticion.usuario.save()
+        peticion.estado = 'aprobada'
+        peticion.fecha_respuesta = timezone.now()
+        peticion.admin_responde = request.user
+        peticion.save()
+        return Response({'mensaje': 'Petición aprobada y cambios aplicados.'})
+
+class PeticionCambioPerfilRechazarView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+    def post(self, request, id):
+        try:
+            peticion = PeticionCambioPerfil.objects.get(id=id)
+        except PeticionCambioPerfil.DoesNotExist:
+            return Response({'detail': 'Petición no encontrada.'}, status=404)
+        if peticion.estado != 'pendiente':
+            return Response({'detail': 'La petición ya fue resuelta.'}, status=400)
+        motivo = request.data.get('motivo_rechazo', '')
+        peticion.estado = 'rechazada'
+        peticion.fecha_respuesta = timezone.now()
+        peticion.admin_responde = request.user
+        peticion.motivo_rechazo = motivo
+        peticion.save()
+        return Response({'mensaje': 'Petición rechazada.'})
+
+class MisPeticionesCambioPerfilView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        peticiones = PeticionCambioPerfil.objects.filter(usuario=request.user).order_by('-fecha_solicitud')
+        serializer = PeticionCambioPerfilSerializer(peticiones, many=True)
+        return Response(serializer.data)
+
+class UsuarioMeView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        serializer = RegistroSerializer(request.user)
+        return Response(serializer.data)
 
 @ensure_csrf_cookie
 def csrf(request):

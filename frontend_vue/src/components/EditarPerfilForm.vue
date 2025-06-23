@@ -11,7 +11,19 @@
       </div>
       <!-- Body -->
       <div class="modal-body">
-        <form @submit.prevent="handleSubmit">
+        <template v-if="peticionPendiente">
+          <div class="peticion-pendiente-msg" style="margin:2rem 0;text-align:center;font-size:1.1rem;color:#b7791f;font-weight:600;">
+            <span>
+              Ya has solicitado editar tu
+              <span v-if="peticionPendiente.datos_nuevos.username">nombre (<b>{{ peticionPendiente.datos_nuevos.username }}</b>)</span>
+              <span v-if="peticionPendiente.datos_nuevos.username && peticionPendiente.datos_nuevos.email"> y </span>
+              <span v-if="peticionPendiente.datos_nuevos.email">email (<b>{{ peticionPendiente.datos_nuevos.email }}</b>)</span>.
+              <br>
+              Estado: <b>{{ peticionPendiente.estado }}</b>. Espera la aprobación de un administrador.
+            </span>
+          </div>
+        </template>
+        <form v-else @submit.prevent="handleSubmit">
           <!-- Título sección datos -->
           <div class="data-section-title">Editar Datos</div>
           <!-- Username -->
@@ -85,10 +97,13 @@
               Cancelar
             </button>
             <button type="submit" class="btn btn-primary">
-              Guardar
+              Enviar
             </button>
           </div>
         </form>
+        <div v-if="peticionEnviada" class="peticion-msg">
+          <span>Tu petición de cambio de perfil fue enviada. Un administrador la aprobará o rechazará pronto.</span>
+        </div>
       </div>
     </div>
   </div>
@@ -113,26 +128,48 @@ const form = ref({
 const showOldPassword = ref(false)
 const showNewPassword = ref(false)
 
-onMounted(() => {
+const peticionEnviada = ref(false)
+const peticionPendiente = ref<any>(null)
+
+onMounted(async () => {
   form.value.username = props.user.username
   form.value.email = props.user.email
+  // Consultar si hay petición pendiente
+  try {
+    const res = await api.get('/api/usuarios/mis_peticiones_cambio/')
+    const pendientes = res.data.filter((p: any) => p.usuario === props.user.id && p.estado === 'pendiente')
+    if (pendientes.length) peticionPendiente.value = pendientes[0]
+  } catch {}
 })
 
 async function handleSubmit() {
+  // Solo enviar campos que realmente cambiaron
+  const datos_cambio: any = {}
+  if (form.value.username !== props.user.username) datos_cambio.username = form.value.username
+  if (form.value.email !== props.user.email) datos_cambio.email = form.value.email
+  if (form.value.password) {
+    datos_cambio.password = form.value.password
+    datos_cambio.old_password = form.value.old_password
+  }
+  if (Object.keys(datos_cambio).length === 0) {
+    alert('No realizaste ningún cambio en tu perfil.')
+    return
+  }
   try {
-    const payload: any = {
-      username: form.value.username,
-      email: form.value.email
-    }
-    if (form.value.password) {
-      payload.password = form.value.password
-      payload.old_password = form.value.old_password
-    }
-    await api.put(`/api/usuarios/${props.user.id}/editar/`, payload)
-    emit('success', { ...props.user, ...payload })
-    emit('close')
+    await api.post('/api/usuarios/peticion_cambio/', {
+      usuario: props.user.id,
+      datos_nuevos: datos_cambio
+    })
+    peticionEnviada.value = true
+    peticionPendiente.value = null
+    setTimeout(() => {
+      peticionEnviada.value = false
+      emit('close')
+    }, 1800)
+    // Opcional: emitir evento para refrescar perfil
+    // emit('success', { ...props.user, ...datos_cambio })
   } catch (e: any) {
-    alert('Error actualizando perfil: ' + (e.response?.data?.detail || e.message))
+    alert('Error enviando petición: ' + (e.response?.data?.detail || e.message))
   }
 }
 </script>
