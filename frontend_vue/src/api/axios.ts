@@ -1,8 +1,22 @@
 // src/api/axios.ts
 import axios from 'axios';
 
-// Interceptor para añadir el token de autenticación a cada request
-axios.interceptors.request.use(
+// Función para obtener el valor de una cookie por nombre
+function getCookie(name: string): string | null {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()!.split(';').shift() || null;
+  return null;
+}
+
+const api = axios.create({
+  baseURL: '', // <--- Cambiado: baseURL vacío para evitar doble /api/api
+  timeout: 10000,
+  withCredentials: true, // <--- Importante para enviar cookies de sesión
+});
+
+// Interceptor SOLO en la instancia api
+api.interceptors.request.use(
   async (config) => {
     // Busca el token en localStorage (ajusta si lo guardas en otro lado)
     const user = localStorage.getItem('user');
@@ -20,15 +34,16 @@ axios.interceptors.request.use(
     // CSRF: solo para métodos que lo requieran
     const method = config.method ? config.method.toUpperCase() : '';
     if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
-      let csrfToken = localStorage.getItem('csrftoken');
+      let csrfToken = getCookie('csrftoken');
       if (!csrfToken) {
+        // Haz un GET para obtener la cookie CSRF si no existe
         try {
-          const resp = await axios.get('/api/usuarios/csrf/');
-          csrfToken = resp.data.csrfToken;
-          if (csrfToken) localStorage.setItem('csrftoken', csrfToken);
+          await api.get('/api/csrf/', { withCredentials: true });
         } catch (e) {}
+        csrfToken = getCookie('csrftoken');
       }
       if (csrfToken) {
+        config.headers = config.headers || {};
         config.headers['X-CSRFToken'] = csrfToken;
       }
     }
@@ -36,11 +51,5 @@ axios.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
-
-const api = axios.create({
-  baseURL: '', // <--- Cambiado: baseURL vacío para evitar doble /api/api
-  timeout: 10000,
-  withCredentials: true, // <--- Importante para enviar cookies de sesión
-});
 
 export default api;

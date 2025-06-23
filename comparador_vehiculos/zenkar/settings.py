@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.reseñas',
     'apps.favoritos',
     'corsheaders',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -76,6 +77,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'zenkar.wsgi.application'
+ASGI_APPLICATION = 'zenkar.asgi.application'
 
 
 # Database
@@ -154,6 +156,11 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
 ]
 
+# CSRF settings para frontend moderno
+CSRF_COOKIE_HTTPONLY = False  # Permite que JS lea la cookie
+CSRF_COOKIE_SAMESITE = 'Lax'  # O 'None' si usas https y dominios cruzados
+CSRF_COOKIE_SECURE = False    # True solo en producción con https
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
@@ -166,3 +173,10 @@ REST_FRAMEWORK = {
 # Consejo: Cuando hagas una petición que cause error 500, revisa la terminal donde ejecutaste 'python manage.py runserver'.
 # Ahí aparecerá el traceback (detalle del error). Si tienes DEBUG=True, también verás una página de error en el navegador.
 # Copia ese error y pégalo aquí para que pueda ayudarte a solucionarlo.
+
+# Opcional: Configuración de capa de canales (por defecto usa memoria, para producción usa Redis)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}

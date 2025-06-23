@@ -693,3 +693,136 @@ td .action-buttons {
   background: #111;
   color: #fff;
 }
+
+/* Unifica el diseño de los botones de acciones de peticiones */
+.admin-content .action-buttons button {
+  background: #f6e05e;
+  color: #222 !important;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  padding: 0.3rem 0.7rem;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  opacity: 1 !important;
+  box-shadow: 0 1px 4px #e5e7eb;
+  transition: background 0.2s;
+}
+.admin-content .action-buttons button:last-child {
+  background: #fed7d7;
+  color: #b91c1c !important;
+  margin-right: 0;
+}
+.admin-content .action-buttons button:hover {
+  filter: brightness(0.95);
+  opacity: 1 !important;
+}
+
+/* --- Estilos migrados desde AdminPanel.vue --- */
+.user-details-modal {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.09);
+  padding: 0;
+  overflow: hidden;
+}
+.user-details-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.38rem 0;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 1rem;
+  color: #333;
+}
+.user-details-row:last-child {
+  border-bottom: none;
+}
+.form-section-title {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 1.2rem 0 0.7rem 0;
+  letter-spacing: 0.01em;
+  border-left: 3px solid #e53e3e;
+  padding-left: 0.7rem;
+  background: none;
+}
+.peticion-action-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+}
+.peticion-aprobar-btn {
+  background: #fff;
+  color: #111;
+  border: 1.5px solid #222;
+  border-radius: 5px;
+  padding: 0.3rem 0.9rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border 0.15s;
+}
+.peticion-aprobar-btn:hover {
+  background: #f3f3f3;
+}
+.peticion-rechazar-btn {
+  background: #fff;
+  color: #e53e3e;
+  border: 1.5px solid #e53e3e;
+  border-radius: 5px;
+  padding: 0.3rem 0.9rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border 0.15s;
+}
+.peticion-rechazar-btn:hover {
+  background: #fff0f0;
+}
+/* ACCIONES: Blanco y negro, sin colores llamativos */
+.action-buttons button,
+.action-btn-edit,
+.action-btn-role,
+.action-btn-delete,
+.action-btn-details {
+  background: #fff !important;
+  color: #111 !important;
+  border: 1.5px solid #bbb !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+  padding: 0.28rem 0.7rem !important;
+  margin: 0 0.13rem !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border 0.15s;
+}
+.action-buttons button:hover,
+.action-btn-edit:hover,
+.action-btn-role:hover,
+.action-btn-delete:hover,
+.action-btn-details:hover {
+  background: #f3f3f3 !important;
+  color: #111 !important;
+  border-color: #888 !important;
+}
+.action-icon {
+  filter: grayscale(1) brightness(0.1) !important;
+  opacity: 0.95;
+  width: 20px;
+  height: 20px;
+}
+
+.admin-tabs button .tab-icon img {
+  filter: none !important;
+  transition: filter 0.18s;
+}
+.admin-tabs button.active .tab-icon img.tab-icon-active {
+  filter: brightness(0) invert(1) !important;
+}
+.admin-add-btn button .tab-icon img.tab-icon-active {
+  filter: brightness(0) invert(1) !important;
+}
